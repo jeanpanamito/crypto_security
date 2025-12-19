@@ -1,0 +1,186 @@
+{% extends 'crypto_app/base.html' %}
+
+{% block title %}Dashboard - Sistema de Criptografía{% endblock %}
+
+{% block content %}
+<div class="hero animate-in">
+    <h1>🔐 Sistema de Criptografía</h1>
+    <p>Plataforma educativa para demostrar algoritmos criptográficos, verificación de mensajes y simulación de ataques</p>
+</div>
+
+<div class="grid-3">
+    <!-- Card: Algoritmos de Cifrado -->
+    <div class="card animate-in" style="animation-delay: 0.1s">
+        <div class="card-header">
+            <div class="card-icon">🔑</div>
+            <div>
+                <h3 class="card-title">Algoritmos de Cifrado</h3>
+                <p class="card-subtitle">Cifrado simétrico y asimétrico</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                Explora diferentes algoritmos de cifrado, desde el clásico César hasta implementaciones propias.
+            </p>
+            <ul style="color: var(--text-secondary); margin-bottom: 1rem; padding-left: 1.5rem;">
+                <li>Cifrado César</li>
+                <li>LFSR (Algoritmo por acarreo)</li>
+                <li>AES (Advanced Encryption Standard)</li>
+                <li>CipherX (Simétrico propio)</li>
+                <li>SimpleRSA (Asimétrico propio)</li>
+            </ul>
+            <a href="{% url 'crypto_app:algorithms' %}" class="btn btn-primary">
+                Explorar Algoritmos →
+            </a>
+        </div>
+    </div>
+    
+    <!-- Card: Autenticación -->
+    <div class="card animate-in" style="animation-delay: 0.2s">
+        <div class="card-header">
+            <div class="card-icon">✅</div>
+            <div>
+                <h3 class="card-title">Autenticación de Mensajes</h3>
+                <p class="card-subtitle">Verificación de origen e integridad</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                Aprende cómo verificar que un mensaje proviene de una fuente legítima y no ha sido alterado.
+            </p>
+            <ul style="color: var(--text-secondary); margin-bottom: 1rem; padding-left: 1.5rem;">
+                <li>HMAC (Hash-based MAC)</li>
+                <li>Firmas Digitales RSA</li>
+                <li>Verificación de Origen</li>
+                <li>Simulación de Canal Seguro</li>
+            </ul>
+            <a href="{% url 'crypto_app:authentication' %}" class="btn btn-primary">
+                Ver Autenticación →
+            </a>
+        </div>
+    </div>
+    
+    <!-- Card: Ataques -->
+    <div class="card animate-in" style="animation-delay: 0.3s">
+        <div class="card-header">
+            <div class="card-icon">⚔️</div>
+            <div>
+                <h3 class="card-title">Ataques Criptográficos</h3>
+                <p class="card-subtitle">Simulación de ataques comunes</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                Comprende cómo funcionan los ataques más comunes y cómo defenderse de ellos.
+            </p>
+            <ul style="color: var(--text-secondary); margin-bottom: 1rem; padding-left: 1.5rem;">
+                <li>Fuerza Bruta</li>
+                <li>Ataque de Diccionario</li>
+                <li>Man-in-the-Middle (MITM)</li>
+                <li>Análisis de Frecuencia</li>
+            </ul>
+            <a href="{% url 'crypto_app:attacks' %}" class="btn btn-danger">
+                Ver Ataques →
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Demo Section -->
+<div class="card animate-in" style="animation-delay: 0.4s; margin-top: 2rem;">
+    <div class="card-header">
+        <div class="card-icon">⚡</div>
+        <div>
+            <h3 class="card-title">Demo Rápida - Cifrado César</h3>
+            <p class="card-subtitle">Prueba el cifrado más simple</p>
+        </div>
+    </div>
+    
+    <div class="grid-2">
+        <div>
+            <div class="form-group">
+                <label for="demo-input">Mensaje</label>
+                <input type="text" id="demo-input" placeholder="Escribe un mensaje..." value="Hola Mundo!">
+            </div>
+            <div class="form-group">
+                <label for="demo-shift">Desplazamiento (1-25)</label>
+                <input type="number" id="demo-shift" value="3" min="1" max="25">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="demoCaesar('encrypt')">🔒 Cifrar</button>
+                <button class="btn btn-secondary" onclick="demoCaesar('decrypt')">🔓 Descifrar</button>
+                <button class="btn btn-danger" onclick="demoCaesar('brute_force')">💥 Fuerza Bruta</button>
+            </div>
+        </div>
+        <div>
+            <label>Resultado</label>
+            <div id="demo-output" class="output">El resultado aparecerá aquí...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Info Section -->
+<div class="grid-2" style="margin-top: 2rem;">
+    <div class="card animate-in" style="animation-delay: 0.5s">
+        <h3 style="margin-bottom: 1rem;">📚 Conceptos Clave</h3>
+        <div class="info-box">
+            <strong>Cifrado Simétrico:</strong> Usa la misma clave para cifrar y descifrar (AES, DES).
+        </div>
+        <div class="info-box">
+            <strong>Cifrado Asimétrico:</strong> Usa par de claves: pública para cifrar, privada para descifrar (RSA, ECC).
+        </div>
+        <div class="info-box">
+            <strong>Hashing:</strong> Función unidireccional que genera un resumen fijo del mensaje (SHA-256).
+        </div>
+    </div>
+    
+    <div class="card animate-in" style="animation-delay: 0.6s">
+        <h3 style="margin-bottom: 1rem;">🛡️ Mejores Prácticas</h3>
+        <div class="warning-box">
+            <strong>Nunca uses algoritmos propios en producción.</strong> Usa librerías probadas como OpenSSL o pycryptodome.
+        </div>
+        <div class="danger-box">
+            <strong>César, ROT13, XOR simple son inseguros.</strong> Son útiles solo para fines educativos.
+        </div>
+        <div class="info-box">
+            <strong>AES-256 y RSA-2048+</strong> son los estándares actuales para cifrado seguro.
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function demoCaesar(action) {
+    const text = document.getElementById('demo-input').value;
+    const shift = document.getElementById('demo-shift').value;
+    
+    showLoading('demo-output');
+    
+    const result = await apiCall('/api/caesar/', {
+        action: action,
+        text: text,
+        shift: parseInt(shift)
+    });
+    
+    if (result.error) {
+        showOutput('demo-output', result.error, true);
+    } else {
+        let output;
+        if (action === 'brute_force') {
+            output = 'ATAQUE DE FUERZA BRUTA\n';
+            output += '='.repeat(40) + '\n\n';
+            output += 'Mejores candidatos:\n\n';
+            result.result.slice(0, 5).forEach((r, i) => {
+                output += `${i+1}. Shift ${r.shift}: "${r.decrypted}" (score: ${r.frequency_score})\n`;
+            });
+        } else {
+            output = `Entrada: ${result.input}\n`;
+            output += `Desplazamiento: ${result.shift}\n`;
+            output += `Resultado: ${result.result}`;
+        }
+        showOutput('demo-output', output);
+    }
+}
+</script>
+{% endblock %}

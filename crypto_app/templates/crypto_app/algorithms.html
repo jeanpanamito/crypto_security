@@ -1,0 +1,385 @@
+{% extends 'crypto_app/base.html' %}
+
+{% block title %}Algoritmos de Cifrado{% endblock %}
+
+{% block content %}
+<div class="hero animate-in">
+    <h1>🔐 Algoritmos de Cifrado</h1>
+    <p>Explora diferentes algoritmos criptográficos: desde clásicos hasta implementaciones modernas</p>
+</div>
+
+<div class="grid-2">
+    <!-- Cifrado César -->
+    <div class="card animate-in">
+        <div class="card-header">
+            <div class="card-icon">🅰️</div>
+            <div>
+                <h3 class="card-title">Cifrado César</h3>
+                <p class="card-subtitle">Sustitución monoalfabética</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Fórmula:</strong> C = (P + K) mod 26<br>
+            <small>Donde P = texto plano, K = desplazamiento, C = texto cifrado</small>
+        </div>
+
+        <div class="form-group">
+            <label>Mensaje</label>
+            <textarea id="caesar-input"
+                placeholder="Escribe tu mensaje...">El rápido zorro marrón salta sobre el perro perezoso</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Desplazamiento (1-25)</label>
+            <input type="number" id="caesar-shift" value="3" min="1" max="25">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="caesar('encrypt')">🔒 Cifrar</button>
+            <button class="btn btn-secondary" onclick="caesar('decrypt')">🔓 Descifrar</button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <label>Resultado</label>
+            <div id="caesar-output" class="output">...</div>
+        </div>
+    </div>
+
+    <!-- LFSR -->
+    <div class="card animate-in" style="animation-delay: 0.1s">
+        <div class="card-header">
+            <div class="card-icon">🔄</div>
+            <div>
+                <h3 class="card-title">LFSR (Acarreo)</h3>
+                <p class="card-subtitle">Cifrado de flujo</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Linear Feedback Shift Register:</strong> Genera una secuencia pseudoaleatoria que se combina (XOR)
+            con el texto.
+        </div>
+
+        <div class="form-group">
+            <label>Mensaje</label>
+            <textarea id="lfsr-input" placeholder="Escribe tu mensaje...">Mensaje secreto para LFSR</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Semilla (hex, ej: ACE1)</label>
+            <input type="text" id="lfsr-seed" value="ACE1" placeholder="ACE1">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="lfsr('encrypt')">🔒 Cifrar</button>
+            <button class="btn btn-secondary" onclick="lfsr('visualize')">👁️ Visualizar</button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <label>Resultado</label>
+            <div id="lfsr-output" class="output">...</div>
+        </div>
+    </div>
+
+    <!-- AES -->
+    <div class="card animate-in" style="animation-delay: 0.2s">
+        <div class="card-header">
+            <div class="card-icon">🏛️</div>
+            <div>
+                <h3 class="card-title">AES</h3>
+                <p class="card-subtitle">Advanced Encryption Standard</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Estándar actual:</strong> Cifrado de bloque de 128 bits con claves de 128/192/256 bits. Usa rondas
+            de SubBytes, ShiftRows, MixColumns y AddRoundKey.
+        </div>
+
+        <div class="form-group">
+            <label>Mensaje</label>
+            <textarea id="aes-input">Este es un mensaje para cifrar con AES</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Clave (16 caracteres para AES-128)</label>
+            <input type="text" id="aes-key" value="MiClaveSecreta16">
+        </div>
+
+        <div class="form-group">
+            <label>Modo</label>
+            <select id="aes-mode">
+                <option value="CBC">CBC (recomendado)</option>
+                <option value="ECB">ECB (inseguro para patrones)</option>
+                <option value="CTR">CTR (contador)</option>
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="aes('encrypt')">🔒 Cifrar</button>
+            <button class="btn btn-secondary" onclick="aes('info')">📖 Info Técnica</button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <label>Resultado</label>
+            <div id="aes-output" class="output">...</div>
+        </div>
+    </div>
+
+    <!-- Algoritmo Simétrico Propio -->
+    <div class="card animate-in" style="animation-delay: 0.3s">
+        <div class="card-header">
+            <div class="card-icon">⚙️</div>
+            <div>
+                <h3 class="card-title">CipherX (Propio)</h3>
+                <p class="card-subtitle">Algoritmo simétrico educativo</p>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠️ Solo educativo:</strong> Este algoritmo demuestra conceptos de S-Box, P-Box y rondas. NO usar en
+            producción.
+        </div>
+
+        <div class="form-group">
+            <label>Mensaje</label>
+            <textarea id="symmetric-input">Texto para CipherX</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Clave (8 caracteres)</label>
+            <input type="text" id="symmetric-key" value="ClaveXYZ" maxlength="8">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="customSymmetric('encrypt')">🔒 Cifrar</button>
+            <button class="btn btn-secondary" onclick="customSymmetric('decrypt')">🔓 Descifrar</button>
+            <button class="btn btn-secondary" onclick="customSymmetric('info')">📖 Info</button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <label>Resultado</label>
+            <div id="symmetric-output" class="output">...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Algoritmo Asimétrico -->
+<div class="card animate-in" style="animation-delay: 0.4s; margin-top: 1.5rem;">
+    <div class="card-header">
+        <div class="card-icon">🔑</div>
+        <div>
+            <h3 class="card-title">SimpleRSA (Asimétrico Propio)</h3>
+            <p class="card-subtitle">Demostración de criptografía de clave pública</p>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <div class="info-box">
+                <strong>RSA simplificado:</strong> Usa números primos pequeños para demostrar el concepto.
+                <br><br>
+                <strong>Fórmulas:</strong><br>
+                • n = p × q<br>
+                • φ(n) = (p-1)(q-1)<br>
+                • e × d ≡ 1 (mod φ(n))<br>
+                • Cifrado: c = m<sup>e</sup> mod n<br>
+                • Descifrado: m = c<sup>d</sup> mod n
+            </div>
+
+            <div class="form-group">
+                <label>Mensaje</label>
+                <input type="text" id="asymmetric-input" value="Hola">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="customAsymmetric('generate')">🔑 Generar Claves</button>
+                <button class="btn btn-secondary" onclick="customAsymmetric('encrypt')">🔒 Cifrar</button>
+                <button class="btn btn-secondary" onclick="customAsymmetric('visualize')">👁️ Visualizar</button>
+            </div>
+        </div>
+        <div>
+            <label>Resultado</label>
+            <div id="asymmetric-output" class="output" style="min-height: 200px;">...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Comparativa -->
+<div class="card animate-in" style="animation-delay: 0.5s; margin-top: 1.5rem;">
+    <div class="card-header">
+        <div class="card-icon">📊</div>
+        <div>
+            <h3 class="card-title">Comparativa de Algoritmos</h3>
+            <p class="card-subtitle">Ventajas y desventajas técnicas</p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Algoritmo</th>
+                <th>Tipo</th>
+                <th>Seguridad</th>
+                <th>Velocidad</th>
+                <th>Uso Recomendado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-danger">César</span></td>
+                <td>Sustitución</td>
+                <td>❌ Muy débil (26 claves)</td>
+                <td>⚡ Muy rápido</td>
+                <td>Solo educativo</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-warning">LFSR</span></td>
+                <td>Flujo</td>
+                <td>⚠️ Débil si se conoce estructura</td>
+                <td>⚡ Muy rápido</td>
+                <td>Hardware, streams</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-success">AES-256</span></td>
+                <td>Bloque simétrico</td>
+                <td>✅ Muy seguro</td>
+                <td>⚡ Rápido (aceleración HW)</td>
+                <td>Estándar actual</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-success">RSA-2048+</span></td>
+                <td>Asimétrico</td>
+                <td>✅ Seguro</td>
+                <td>🐢 Lento</td>
+                <td>Intercambio de claves, firmas</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-primary">ChaCha20</span></td>
+                <td>Flujo moderno</td>
+                <td>✅ Muy seguro</td>
+                <td>⚡ Muy rápido (software)</td>
+                <td>TLS 1.3, móviles</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function caesar(action) {
+        const text = document.getElementById('caesar-input').value;
+        const shift = document.getElementById('caesar-shift').value;
+        showLoading('caesar-output');
+
+        const result = await apiCall('/api/caesar/', {
+            action: action,
+            text: text,
+            shift: parseInt(shift)
+        });
+
+        if (result.error) {
+            showOutput('caesar-output', result.error, true);
+        } else {
+            showOutput('caesar-output', `Resultado: ${result.result}`);
+        }
+    }
+
+    async function lfsr(action) {
+        const text = document.getElementById('lfsr-input').value;
+        const seed = document.getElementById('lfsr-seed').value;
+        showLoading('lfsr-output');
+
+        const result = await apiCall('/api/lfsr/', {
+            action: action,
+            text: text,
+            seed: seed
+        });
+
+        if (result.error) {
+            showOutput('lfsr-output', result.error, true);
+        } else {
+            showOutput('lfsr-output', JSON.stringify(result.result, null, 2));
+        }
+    }
+
+    async function aes(action) {
+        const text = document.getElementById('aes-input').value;
+        const key = document.getElementById('aes-key').value;
+        const mode = document.getElementById('aes-mode').value;
+        showLoading('aes-output');
+
+        const result = await apiCall('/api/aes/', {
+            action: action,
+            text: text,
+            key: key,
+            mode: mode
+        });
+
+        if (result.error) {
+            showOutput('aes-output', result.error, true);
+        } else {
+            showOutput('aes-output', JSON.stringify(result.result, null, 2));
+        }
+    }
+
+    async function customSymmetric(action) {
+        const text = document.getElementById('symmetric-input').value;
+        const key = document.getElementById('symmetric-key').value;
+        showLoading('symmetric-output');
+
+        const result = await apiCall('/api/custom-symmetric/', {
+            action: action,
+            text: text,
+            key: key
+        });
+
+        if (result.error) {
+            showOutput('symmetric-output', result.error, true);
+        } else {
+            showOutput('symmetric-output', JSON.stringify(result.result, null, 2));
+        }
+    }
+
+    async function customAsymmetric(action) {
+        const text = document.getElementById('asymmetric-input').value;
+        showLoading('asymmetric-output');
+
+        const result = await apiCall('/api/custom-asymmetric/', {
+            action: action,
+            text: text
+        });
+
+        if (result.error) {
+            showOutput('asymmetric-output', result.error, true);
+        } else {
+            let output;
+            if (action === 'generate') {
+                const r = result.result;
+                output = `GENERACIÓN DE CLAVES RSA
+${'='.repeat(35)}
+Primos:
+  p = ${r.p}
+  q = ${r.q}
+
+Módulo:
+  n = p × q = ${r.n}
+  φ(n) = ${r.phi_n}
+
+Exponentes:
+  e (público) = ${r.e}
+  d (privado) = ${r.d}
+
+Claves:
+  Pública:  ${r.public_key}
+  Privada:  ${r.private_key}`;
+            } else {
+                output = JSON.stringify(result.result, null, 2);
+            }
+            showOutput('asymmetric-output', output);
+        }
+    }
+</script>
+{% endblock %}

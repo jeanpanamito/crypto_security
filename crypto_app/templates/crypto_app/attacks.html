@@ -1,0 +1,373 @@
+{% extends 'crypto_app/base.html' %}
+
+{% block title %}Ataques Criptográficos{% endblock %}
+
+{% block content %}
+<div class="hero animate-in">
+    <h1>⚔️ Ataques Criptográficos</h1>
+    <p>Comprende cómo funcionan los ataques más comunes y cómo defenderse de ellos</p>
+</div>
+
+<div class="grid-2">
+    <!-- Fuerza Bruta -->
+    <div class="card animate-in">
+        <div class="card-header">
+            <div class="card-icon">💪</div>
+            <div>
+                <h3 class="card-title">Ataque de Fuerza Bruta</h3>
+                <p class="card-subtitle">Probar todas las claves posibles</p>
+            </div>
+        </div>
+
+        <div class="danger-box">
+            <strong>Concepto:</strong> Probar exhaustivamente todas las combinaciones de claves hasta encontrar la
+            correcta.
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="bf-caesar">César</button>
+            <button class="tab" data-tab="bf-estimate">Estimador</button>
+            <button class="tab" data-tab="bf-frequency">Frecuencia</button>
+        </div>
+
+        <div id="bf-caesar" class="tab-content active">
+            <div class="form-group">
+                <label>Texto Cifrado (César)</label>
+                <textarea id="bf-ciphertext">Hvwh hv xq phqvdmh vhfuhwr</textarea>
+            </div>
+            <button class="btn btn-danger" onclick="bruteForce('caesar')">
+                💥 Ejecutar Fuerza Bruta
+            </button>
+        </div>
+
+        <div id="bf-estimate" class="tab-content">
+            <div class="form-group">
+                <label>Longitud de contraseña</label>
+                <input type="number" id="bf-length" value="8" min="1" max="20">
+            </div>
+            <div class="form-group">
+                <label>Juego de caracteres</label>
+                <select id="bf-charset">
+                    <option value="26">Solo minúsculas (a-z): 26</option>
+                    <option value="52">Mayúsculas y minúsculas: 52</option>
+                    <option value="62" selected>Alfanumérico: 62</option>
+                    <option value="95">Todos imprimibles: 95</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="bruteForce('estimate')">
+                ⏱️ Estimar Tiempo
+            </button>
+        </div>
+
+        <div id="bf-frequency" class="tab-content">
+            <div class="form-group">
+                <label>Texto a Analizar</label>
+                <textarea
+                    id="bf-freq-text">El análisis de frecuencia permite identificar patrones en textos cifrados</textarea>
+            </div>
+            <button class="btn btn-secondary" onclick="bruteForce('frequency')">
+                📊 Analizar Frecuencias
+            </button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <label>Resultado</label>
+            <div id="bf-output" class="output">...</div>
+        </div>
+    </div>
+
+    <!-- Man-in-the-Middle -->
+    <div class="card animate-in" style="animation-delay: 0.1s">
+        <div class="card-header">
+            <div class="card-icon">🕵️</div>
+            <div>
+                <h3 class="card-title">Man-in-the-Middle (MITM)</h3>
+                <p class="card-subtitle">Interceptar comunicaciones</p>
+            </div>
+        </div>
+
+        <div class="danger-box">
+            <strong>Concepto:</strong> El atacante se posiciona entre dos partes y puede leer/modificar mensajes.
+        </div>
+
+        <div class="form-group">
+            <label>Escenario a Simular</label>
+            <select id="mitm-scenario">
+                <option value="unencrypted">Sin cifrado (vulnerable)</option>
+                <option value="diffie_hellman">Diffie-Hellman sin autenticar</option>
+                <option value="with_signature">Con firma digital (protegido)</option>
+            </select>
+        </div>
+
+        <button class="btn btn-danger" onclick="runMITM()">
+            🎭 Ejecutar Simulación
+        </button>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <label>Resultado</label>
+            <div id="mitm-output" class="output" style="min-height: 200px;">...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Herramientas Kali Linux -->
+<div class="card animate-in" style="animation-delay: 0.2s; margin-top: 1.5rem;">
+    <div class="card-header">
+        <div class="card-icon">🐉</div>
+        <div>
+            <h3 class="card-title">Herramientas de Kali Linux</h3>
+            <p class="card-subtitle">Arsenal para pruebas de seguridad</p>
+        </div>
+    </div>
+
+    <div class="grid-3">
+        <div class="info-box">
+            <strong>🔐 Hashcat</strong><br>
+            Cracking de hashes con GPU<br>
+            <code>hashcat -m 0 hash.txt wordlist.txt</code>
+        </div>
+
+        <div class="info-box">
+            <strong>🔑 John the Ripper</strong><br>
+            Cracker de contraseñas versátil<br>
+            <code>john --wordlist=rockyou.txt hashes.txt</code>
+        </div>
+
+        <div class="info-box">
+            <strong>🌐 Hydra</strong><br>
+            Ataques de fuerza bruta en línea<br>
+            <code>hydra -l admin -P passwords.txt ssh://target</code>
+        </div>
+
+        <div class="warning-box">
+            <strong>🦈 Wireshark</strong><br>
+            Análisis de tráfico de red<br>
+            Captura paquetes y analiza protocolos
+        </div>
+
+        <div class="warning-box">
+            <strong>🎭 Ettercap</strong><br>
+            Framework para MITM<br>
+            ARP spoofing y más
+        </div>
+
+        <div class="warning-box">
+            <strong>🔄 Bettercap</strong><br>
+            Herramienta modular de ataques<br>
+            Sucesor moderno de Ettercap
+        </div>
+    </div>
+</div>
+
+<!-- Cómo Descifrar -->
+<div class="card animate-in" style="animation-delay: 0.3s; margin-top: 1.5rem;">
+    <div class="card-header">
+        <div class="card-icon">🧩</div>
+        <div>
+            <h3 class="card-title">¿Cómo Descifrar Algo?</h3>
+            <p class="card-subtitle">Metodología de análisis criptográfico</p>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <h4 style="margin-bottom: 1rem;">Pasos del Análisis</h4>
+            <ol style="color: var(--text-secondary); padding-left: 1.5rem;">
+                <li style="margin-bottom: 0.75rem;">
+                    <strong>Identificar el cifrado:</strong> ¿Base64? ¿Hex? ¿César? ¿Sustitución?
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                    <strong>Análisis de frecuencia:</strong> ¿Hay patrones? ¿Letras repetidas?
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                    <strong>Conocer contexto:</strong> ¿Idioma? ¿Formato esperado?
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                    <strong>Probar ataques conocidos:</strong> Fuerza bruta si es viable
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                    <strong>Buscar debilidades:</strong> IVs repetidos, claves débiles, etc.
+                </li>
+            </ol>
+        </div>
+        <div>
+            <h4 style="margin-bottom: 1rem;">Herramientas Útiles</h4>
+            <div class="info-box">
+                <strong>CyberChef:</strong> Navaja suiza de operaciones con datos
+            </div>
+            <div class="info-box">
+                <strong>dCode:</strong> Base de datos de cifrados clásicos
+            </div>
+            <div class="info-box">
+                <strong>hash-identifier:</strong> Identifica tipos de hash
+            </div>
+            <div class="info-box">
+                <strong>CrackStation:</strong> Bases de datos de hashes online
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Defensas -->
+<div class="card animate-in" style="animation-delay: 0.4s; margin-top: 1.5rem;">
+    <div class="card-header">
+        <div class="card-icon">🛡️</div>
+        <div>
+            <h3 class="card-title">Defensas y Contramedidas</h3>
+            <p class="card-subtitle">Cómo protegerse de estos ataques</p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ataque</th>
+                <th>Defensa</th>
+                <th>Implementación</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-danger">Fuerza Bruta</span></td>
+                <td>
+                    • Claves largas (16+ caracteres)<br>
+                    • Límite de intentos<br>
+                    • Delay exponencial
+                </td>
+                <td>
+                    <code>bcrypt</code>, <code>Argon2</code>,<br>
+                    Rate limiting, CAPTCHA
+                </td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-danger">Diccionario</span></td>
+                <td>
+                    • Contraseñas complejas<br>
+                    • Sin palabras comunes<br>
+                    • Salted hashing
+                </td>
+                <td>
+                    Políticas de contraseña,<br>
+                    Salt único por usuario
+                </td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-warning">MITM</span></td>
+                <td>
+                    • HTTPS/TLS<br>
+                    • Certificate pinning<br>
+                    • VPN
+                </td>
+                <td>
+                    Let's Encrypt,<br>
+                    HSTS headers
+                </td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-warning">Replay</span></td>
+                <td>
+                    • Timestamps<br>
+                    • Nonces únicos<br>
+                    • Tokens de sesión
+                </td>
+                <td>
+                    JWT con exp,<br>
+                    Challenge-response
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function bruteForce(action) {
+        showLoading('bf-output');
+        let data = { action: action };
+
+        if (action === 'caesar') {
+            data.ciphertext = document.getElementById('bf-ciphertext').value;
+        } else if (action === 'estimate') {
+            data.key_length = parseInt(document.getElementById('bf-length').value);
+            data.charset_size = parseInt(document.getElementById('bf-charset').value);
+        } else if (action === 'frequency') {
+            data.ciphertext = document.getElementById('bf-freq-text').value;
+        }
+
+        const result = await apiCall('/api/brute-force/', data);
+
+        if (result.error) {
+            showOutput('bf-output', result.error, true);
+        } else {
+            let output;
+            if (action === 'caesar') {
+                output = `ATAQUE DE FUERZA BRUTA - CÉSAR
+${'='.repeat(40)}
+Intentos: ${result.result.total_attempts}
+Tiempo: ${result.result.time_seconds}s
+Complejidad: ${result.result.complexity}
+
+MEJORES CANDIDATOS:
+`;
+                result.result.all_results.slice(0, 5).forEach((r, i) => {
+                    output += `\n${i + 1}. Shift ${r.shift.toString().padStart(2)}: "${r.decrypted.substring(0, 40)}${r.decrypted.length > 40 ? '...' : ''}"`;
+                    output += `\n   Score: ${r.frequency_score}`;
+                });
+            } else if (action === 'estimate') {
+                const r = result.result;
+                output = `ESTIMACIÓN DE TIEMPO
+${'='.repeat(40)}
+Longitud clave: ${r.key_length} caracteres
+Caracteres posibles: ${r.charset_size}
+Combinaciones totales: ${r.total_combinations}
+Velocidad asumida: ${r.attempts_per_second}/seg
+
+TIEMPO ESTIMADO:
+`;
+                Object.entries(r.time_estimate).forEach(([unit, val]) => {
+                    if (val !== 'N/A') output += `  ${unit}: ${val}\n`;
+                });
+                output += `\n${r.conclusion}`;
+            } else {
+                output = JSON.stringify(result.result, null, 2);
+            }
+            showOutput('bf-output', output);
+        }
+    }
+
+    async function runMITM() {
+        const scenario = document.getElementById('mitm-scenario').value;
+        showLoading('mitm-output');
+
+        const result = await apiCall('/api/mitm/', { scenario: scenario });
+
+        if (result.error) {
+            showOutput('mitm-output', result.error, true);
+        } else {
+            let output = `SIMULACIÓN MITM: ${result.result.scenario}
+${'='.repeat(50)}
+Resultado: ${result.result.result}
+
+`;
+            result.result.steps.forEach(step => {
+                output += `\n📍 PASO ${step.step}: ${step.action}\n`;
+                output += '-'.repeat(40) + '\n';
+                Object.entries(step).forEach(([k, v]) => {
+                    if (k !== 'step' && k !== 'action') {
+                        output += `   ${k}: ${v}\n`;
+                    }
+                });
+            });
+
+            output += `\n${'='.repeat(50)}`;
+            output += `\n✅ CONCLUSIÓN: ${result.result.conclusion}`;
+            if (result.result.solution) {
+                output += `\n💡 SOLUCIÓN: ${result.result.solution}`;
+            }
+
+            showOutput('mitm-output', output);
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,357 @@
+{% extends 'crypto_app/base.html' %}
+
+{% block title %}Autenticación de Mensajes{% endblock %}
+
+{% block content %}
+<div class="hero animate-in">
+    <h1>✅ Autenticación de Mensajes</h1>
+    <p>Verifica el origen e integridad de los mensajes: ¿Quién lo envió? ¿Ha sido alterado?</p>
+</div>
+
+<div class="grid-2">
+    <!-- HMAC -->
+    <div class="card animate-in">
+        <div class="card-header">
+            <div class="card-icon">#️⃣</div>
+            <div>
+                <h3 class="card-title">HMAC</h3>
+                <p class="card-subtitle">Hash-based Message Authentication Code</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>¿Cómo funciona?</strong><br>
+            1. Remitente y destinatario comparten una clave secreta<br>
+            2. Se calcula HMAC = H((K ⊕ opad) || H((K ⊕ ipad) || m))<br>
+            3. El destinatario recalcula y compara
+        </div>
+
+        <div class="form-group">
+            <label>Mensaje</label>
+            <textarea id="hmac-message">Transferir $1000 a la cuenta 12345</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Clave Secreta Compartida</label>
+            <input type="text" id="hmac-key" value="clave_secreta_compartida">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="hmac('create')">📝 Crear MAC</button>
+            <button class="btn btn-secondary" onclick="hmac('authenticate')">🔐 Autenticar</button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <label>Resultado</label>
+            <div id="hmac-output" class="output">...</div>
+        </div>
+    </div>
+
+    <!-- Firma Digital -->
+    <div class="card animate-in" style="animation-delay: 0.1s">
+        <div class="card-header">
+            <div class="card-icon">✍️</div>
+            <div>
+                <h3 class="card-title">Firma Digital</h3>
+                <p class="card-subtitle">RSA-SHA256</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Ventajas sobre HMAC:</strong><br>
+            • No requiere compartir secretos<br>
+            • Proporciona no repudio<br>
+            • Cualquiera puede verificar con la clave pública
+        </div>
+
+        <div class="form-group">
+            <label>Documento a Firmar</label>
+            <textarea id="signature-message">Contrato: Acepto los términos y condiciones...</textarea>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="signature('sign')">✍️ Firmar</button>
+            <button class="btn btn-secondary" onclick="signature('explain')">📖 Explicación</button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <label>Resultado</label>
+            <div id="signature-output" class="output">...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Verificación de Origen -->
+<div class="card animate-in" style="animation-delay: 0.2s; margin-top: 1.5rem;">
+    <div class="card-header">
+        <div class="card-icon">🔍</div>
+        <div>
+            <h3 class="card-title">Verificación de Origen</h3>
+            <p class="card-subtitle">¿Cómo saber que el mensaje viene de quien dice ser?</p>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <h4 style="margin-bottom: 1rem;">Simulación de Canal Seguro</h4>
+            <button class="btn btn-primary" onclick="simulateChannel()" style="margin-bottom: 1rem;">
+                ▶️ Ejecutar Simulación
+            </button>
+
+            <div class="info-box">
+                <strong>Escenario:</strong> Alice envía un mensaje bancario a Bob.<br>
+                La simulación muestra cómo HMAC protege contra modificaciones.
+            </div>
+        </div>
+        <div>
+            <label>Log de la Simulación</label>
+            <div id="simulation-output" class="output" style="min-height: 250px;">
+                Haz clic en "Ejecutar Simulación" para ver el proceso paso a paso...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Comparación HMAC vs Firma Digital -->
+<div class="card animate-in" style="animation-delay: 0.3s; margin-top: 1.5rem;">
+    <div class="card-header">
+        <div class="card-icon">⚖️</div>
+        <div>
+            <h3 class="card-title">HMAC vs Firma Digital</h3>
+            <p class="card-subtitle">¿Cuándo usar cada uno?</p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Característica</th>
+                <th>HMAC</th>
+                <th>Firma Digital</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Tipo</strong></td>
+                <td>Simétrico</td>
+                <td>Asimétrico</td>
+            </tr>
+            <tr>
+                <td><strong>Clave compartida</strong></td>
+                <td>✅ Sí, necesaria</td>
+                <td>❌ No necesaria</td>
+            </tr>
+            <tr>
+                <td><strong>No repudio</strong></td>
+                <td>❌ No proporciona</td>
+                <td>✅ Sí proporciona</td>
+            </tr>
+            <tr>
+                <td><strong>Velocidad</strong></td>
+                <td>⚡ Muy rápido</td>
+                <td>🐢 Más lento</td>
+            </tr>
+            <tr>
+                <td><strong>Verificador</strong></td>
+                <td>Solo quien tiene la clave</td>
+                <td>Cualquiera con clave pública</td>
+            </tr>
+            <tr>
+                <td><strong>Uso típico</strong></td>
+                <td>API tokens, sesiones, comunicación entre servidores</td>
+                <td>Certificados, contratos, actualizaciones de software</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Demo de Verificación -->
+<div class="card animate-in" style="animation-delay: 0.4s; margin-top: 1.5rem;">
+    <div class="card-header">
+        <div class="card-icon">🧪</div>
+        <div>
+            <h3 class="card-title">Demo: Verificación de Integridad</h3>
+            <p class="card-subtitle">Prueba cómo se detectan las modificaciones</p>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <div class="form-group">
+                <label>Mensaje Original</label>
+                <input type="text" id="verify-message" value="Monto: $500">
+            </div>
+
+            <div class="form-group">
+                <label>Clave</label>
+                <input type="text" id="verify-key" value="secreto123">
+            </div>
+
+            <button class="btn btn-primary" onclick="createMAC()" style="margin-bottom: 1rem;">
+                1️⃣ Generar MAC
+            </button>
+
+            <div id="mac-display" class="output" style="margin-bottom: 1rem;">
+                MAC aparecerá aquí...
+            </div>
+
+            <div class="form-group">
+                <label>Mensaje para Verificar (modifícalo para probar)</label>
+                <input type="text" id="verify-message-check" value="Monto: $500">
+            </div>
+
+            <button class="btn btn-secondary" onclick="verifyMAC()">
+                2️⃣ Verificar MAC
+            </button>
+        </div>
+        <div>
+            <label>Resultado de Verificación</label>
+            <div id="verify-output" class="output" style="min-height: 150px;">
+                1. Genera un MAC con el mensaje original
+                2. Modifica el mensaje en el segundo campo
+                3. Verifica para ver cómo se detecta la alteración
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentMAC = '';
+
+    async function hmac(action) {
+        const message = document.getElementById('hmac-message').value;
+        const key = document.getElementById('hmac-key').value;
+        showLoading('hmac-output');
+
+        const result = await apiCall('/api/hmac/', {
+            action: action,
+            message: message,
+            key: key
+        });
+
+        if (result.error) {
+            showOutput('hmac-output', result.error, true);
+        } else {
+            showOutput('hmac-output', JSON.stringify(result.result, null, 2));
+        }
+    }
+
+    async function signature(action) {
+        const message = document.getElementById('signature-message').value;
+        showLoading('signature-output');
+
+        const result = await apiCall('/api/signature/', {
+            action: action,
+            message: message
+        });
+
+        if (result.error) {
+            showOutput('signature-output', result.error, true);
+        } else {
+            if (action === 'sign') {
+                let output = `MENSAJE FIRMADO
+${'='.repeat(40)}
+Mensaje: ${result.result.message}
+Timestamp: ${result.result.timestamp}
+Algoritmo: ${result.result.algorithm}
+
+Firma (primeros 64 chars):
+${result.result.signature.substring(0, 64)}...
+
+Clave pública (primeras 3 líneas):
+${result.result.public_key.split('\n').slice(0, 3).join('\n')}
+...`;
+                showOutput('signature-output', output);
+            } else {
+                showOutput('signature-output', JSON.stringify(result.result, null, 2));
+            }
+        }
+    }
+
+    async function simulateChannel() {
+        showLoading('simulation-output');
+
+        const result = await apiCall('/api/origin-verification/', {
+            action: 'simulate'
+        });
+
+        if (result.error) {
+            showOutput('simulation-output', result.error, true);
+        } else {
+            let output = `SIMULACIÓN: ${result.result.scenario}
+${'='.repeat(50)}
+
+`;
+            result.result.steps.forEach(step => {
+                output += `PASO ${step.step}: ${step.action}\n`;
+                output += '-'.repeat(40) + '\n';
+                Object.entries(step).forEach(([k, v]) => {
+                    if (k !== 'step' && k !== 'action') {
+                        output += `  ${k}: ${v}\n`;
+                    }
+                });
+                output += '\n';
+            });
+            showOutput('simulation-output', output);
+        }
+    }
+
+    async function createMAC() {
+        const message = document.getElementById('verify-message').value;
+        const key = document.getElementById('verify-key').value;
+
+        const result = await apiCall('/api/hmac/', {
+            action: 'create',
+            message: message,
+            key: key
+        });
+
+        if (result.result) {
+            currentMAC = result.result.mac;
+            document.getElementById('mac-display').textContent = `MAC: ${currentMAC}`;
+            document.getElementById('mac-display').className = 'output success';
+            document.getElementById('verify-message-check').value = message;
+            document.getElementById('verify-output').textContent = 'MAC generado. Ahora modifica el mensaje y verifica.';
+        }
+    }
+
+    async function verifyMAC() {
+        const message = document.getElementById('verify-message-check').value;
+        const key = document.getElementById('verify-key').value;
+
+        const result = await apiCall('/api/hmac/', {
+            action: 'verify',
+            message: message,
+            key: key,
+            mac: currentMAC
+        });
+
+        if (result.result) {
+            if (result.result.is_valid) {
+                showOutput('verify-output', `✅ VERIFICACIÓN EXITOSA
+
+El mensaje es auténtico e íntegro.
+- No ha sido modificado
+- Proviene de alguien que conoce la clave
+
+Mensaje: "${message}"
+MAC coincide: ${currentMAC.substring(0, 32)}...`);
+            } else {
+                showOutput('verify-output', `❌ VERIFICACIÓN FALLIDA
+
+⚠️ EL MENSAJE HA SIDO ALTERADO O
+   LA CLAVE ES INCORRECTA
+
+El MAC calculado no coincide con el original.
+Esto indica que:
+- El mensaje fue modificado en tránsito, o
+- No proviene de la fuente esperada
+
+Mensaje recibido: "${message}"`, true);
+            }
+        }
+    }
+</script>
+{% endblock %}
